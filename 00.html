@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מחולל קישורי נטפרי</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg border-t-4 border-blue-600">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">מחולל פניות נטפרי</h1>
+        
+        <div class="space-y-4">
+            <!-- שדה כתובת האתר -->
+            <div>
+                <label for="targetUrl" class="block text-sm font-medium text-gray-700 mb-1">כתובת האתר לבדיקה (u)</label>
+                <input type="url" id="targetUrl" placeholder="https://example.com" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" required>
+                <p class="text-xs text-gray-500 mt-1">הכנס את הכתובת המלאה שברצונך לשלוח לבדיקה.</p>
+            </div>
+
+            <!-- שדה כתובת מפנה (אופציונלי) -->
+            <div>
+                <label for="referrerUrl" class="block text-sm font-medium text-gray-700 mb-1">כתובת מפנה (r) - אופציונלי</label>
+                <input type="url" id="referrerUrl" value="https://www.google.com/" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+            </div>
+
+            <button onclick="generateLink()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-200 shadow-md">
+                צור קישור
+            </button>
+        </div>
+
+        <!-- אזור התוצאה -->
+        <div id="resultArea" class="hidden mt-6 bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <label class="block text-sm font-medium text-gray-700 mb-2">הקישור שלך מוכן:</label>
+            
+            <!-- תיבת טקסט עם הקישור להעתקה -->
+            <div class="flex items-center space-x-2 space-x-reverse mb-3">
+                <input type="text" id="generatedLinkInput" readonly class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-600 select-all" dir="ltr">
+                <button onclick="copyToClipboard()" class="p-2 text-gray-500 hover:text-blue-600" title="העתק ללוח">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- כפתור פתיחה ישירה -->
+            <a id="openLinkBtn" href="#" target="_blank" class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg transition duration-200">
+                פתח את הקישור בחלון חדש
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function generateLink() {
+            // קבלת הערכים מהשדות
+            const targetUrl = document.getElementById('targetUrl').value.trim();
+            const referrerUrl = document.getElementById('referrerUrl').value.trim();
+            
+            if (!targetUrl) {
+                alert('אנא הזן כתובת אתר לבדיקה');
+                return;
+            }
+
+            // קידוד הכתובות כדי שיתאימו לפורמט URL
+            const encodedTarget = encodeURIComponent(targetUrl);
+            const encodedReferrer = encodeURIComponent(referrerUrl);
+
+            // בניית הקישור הסופי לפי התבנית שביקשת
+            // https://netfree.link/app/#/tickets/new?u=...&r=...&t=site&bi=
+            const finalLink = `https://netfree.link/app/#/tickets/new?u=${encodedTarget}&r=${encodedReferrer}&t=site&bi=`;
+
+            // הצגת התוצאה
+            const resultArea = document.getElementById('resultArea');
+            const linkInput = document.getElementById('generatedLinkInput');
+            const openBtn = document.getElementById('openLinkBtn');
+
+            linkInput.value = finalLink;
+            openBtn.href = finalLink;
+            
+            resultArea.classList.remove('hidden');
+        }
+
+        function copyToClipboard() {
+            const copyText = document.getElementById("generatedLinkInput");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // למכשירים ניידים
+            document.execCommand("copy");
+            
+            // משוב ויזואלי קצר (אופציונלי)
+            const originalValue = copyText.value;
+            // אפשר להוסיף כאן הודעת "הועתק" אם רוצים
+        }
+    </script>
+</body>
+</html>
